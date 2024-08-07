@@ -30,7 +30,7 @@ def call_llama_api(prompt):
         "Content-Type": "application/json"
     }
     data = {
-         "model" : "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+        "model" : "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
         "prompt": prompt,
         "max_tokens": 150  # Adjust as needed
     }
