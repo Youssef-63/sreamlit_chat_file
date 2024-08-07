@@ -71,7 +71,6 @@ if user_question:
         full_prompt = prompt.format(context=context, question=user_question)
         response = call_llama_api(full_prompt)
 
-        Display PDF content in the sidebar
         st.sidebar.write("### PDF Content")
         for page in st.session_state.pages:
             st.sidebar.write(page.page_content)
