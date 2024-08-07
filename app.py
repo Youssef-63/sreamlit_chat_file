@@ -7,6 +7,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 from operator import itemgetter
 
+API_KEY = ""
+API_URL = ""
 
 # Title and description
 st.title(" 💬 Chat with 🦙 LLAMA 3.1 8B on your personal PDF file ")
