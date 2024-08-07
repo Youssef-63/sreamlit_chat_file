@@ -1,0 +1,7 @@
+streamlit
+tempfile
+langchain_community
+operator
+langchain_ollama
+langchain_core
+langchain
