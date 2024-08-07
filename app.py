@@ -71,17 +71,12 @@ if user_question:
         full_prompt = prompt.format(context=context, question=user_question)
         response = call_llama_api(full_prompt)
 
-        # Display PDF content in the sidebar
-        # st.sidebar.write("### PDF Content")
-        # for page in st.session_state.pages:
-        #     st.sidebar.write(page.page_content)
-        # Display the PDF using an HTML iframe
-        pdf_display_html = f"""
-        <iframe src="https://docs.google.com/gview?url={temp_file_path}&embedded=true" 
-                style="width: 70%; height: 90vh;" frameborder="0"></iframe>
-        """
-        with st.sidebar:
-            st.markdown(pdf_display_html, unsafe_allow_html=True)
+        Display PDF content in the sidebar
+        st.sidebar.write("### PDF Content")
+        for page in st.session_state.pages:
+            st.sidebar.write(page.page_content)
+        Display the PDF using an HTML iframe
+       
         
         # Display the response
         st.write("### Response from LLM")
