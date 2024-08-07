@@ -72,10 +72,13 @@ if user_question:
         response = call_llama_api(full_prompt)
 
         # Display PDF content in the sidebar
+        # st.sidebar.write("### PDF Content")
+        # for page in st.session_state.pages:
+        #     st.sidebar.write(page.page_content)
         st.sidebar.write("### PDF Content")
-        for page in st.session_state.pages:
-            st.sidebar.write(page.page_content)
-
+        for img in st.session_state.images:
+            st.sidebar.image(img, caption='Page')
+        
         # Display the response
         st.write("### Response from LLM")
         st.write(response)
