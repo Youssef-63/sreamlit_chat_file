@@ -75,9 +75,13 @@ if user_question:
         # st.sidebar.write("### PDF Content")
         # for page in st.session_state.pages:
         #     st.sidebar.write(page.page_content)
-        st.sidebar.write("### PDF Content")
-        for img in st.session_state.images:
-            st.sidebar.image(img, caption='Page')
+        # Display the PDF using an HTML iframe
+        pdf_display_html = f"""
+        <iframe src="https://docs.google.com/gview?url={temp_file_path}&embedded=true" 
+                style="width: 70%; height: 90vh;" frameborder="0"></iframe>
+        """
+    
+        st.markdown(pdf_display_html, unsafe_allow_html=True)
         
         # Display the response
         st.write("### Response from LLM")
