@@ -1,15 +1,19 @@
 import streamlit as st
 import tempfile
+import requests
+import json
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
-from langchain_community.embeddings.ollama import OllamaEmbeddings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import DocArrayInMemorySearch
 from operator import itemgetter
 
+# API configuration
+API_URL = "" 
+API_KEY = ""
+
 # Title and description
-st.title(" 💬 Chat with 🦙 ollama on your personal PDF file ")
+st.title(" 💬 Chat with 🦙 LLAMA 3.1 8B on your personal PDF file ")
 st.write("Upload a PDF and ask questions about its content.")
 
 # PDF file upload
@@ -18,15 +22,28 @@ uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 # User input for question
 user_question = st.text_input("Ask a question about the PDF content:")
 
-# Use session state to store embeddings, vectorstore, and other reusable objects
+# Use session state to store vectorstore, and other reusable objects
 if 'vectorstore' not in st.session_state:
     st.session_state.vectorstore = None
-    st.session_state.embeddings = None
     st.session_state.pages = None
 
-if uploaded_file:
-    model = "llama3.1:8b"
+def call_llama_api(prompt):
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "prompt": prompt,
+        "max_tokens": 120  # Adjust as needed
+    }
+    response = requests.post(API_URL, headers=headers, data=json.dumps(data))
     
+    if response.status_code == 200:
+        return response.json().get('text', 'No response text')
+    else:
+        return f"Error: {response.status_code} - {response.text}"
+
+if uploaded_file:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
         temp_file.write(uploaded_file.read())
         temp_file_path = temp_file.name
@@ -35,13 +52,12 @@ if uploaded_file:
     pages = loader.load_and_split()
 
     if st.session_state.pages != pages:
-        embeddings = OllamaEmbeddings(model=model)
-        vectorstore = DocArrayInMemorySearch.from_documents(pages, embedding=embeddings)
+        # Create a vector store using the content from PDF
+        vectorstore = DocArrayInMemorySearch.from_documents(pages, embedding=None)  # No embedding required for API use
         retriever = vectorstore.as_retriever()
 
         # Save to session state
         st.session_state.vectorstore = vectorstore
-        st.session_state.embeddings = embeddings
         st.session_state.pages = pages
 
 if user_question:
@@ -56,20 +72,11 @@ if user_question:
         """
 
         prompt = ChatPromptTemplate.from_template(template)
-        model = OllamaLLM(model=model)
-        parser = StrOutputParser()
-
-        chain = (
-            {
-                "context": itemgetter("question") | st.session_state.vectorstore.as_retriever(),
-                "question": itemgetter("question"),
-            }
-            | prompt
-            | model
-            | parser
-        )
-
-        response = chain.invoke({"question": user_question})
+        
+        # Generate prompt and call API
+        context = "\n".join([page.page_content for page in st.session_state.pages])
+        full_prompt = prompt.format(context=context, question=user_question)
+        response = call_llama_api(full_prompt)
 
         # Display PDF content in the sidebar
         st.sidebar.write("### PDF Content")
@@ -79,5 +86,3 @@ if user_question:
         # Display the response
         st.write("### Response from LLM")
         st.write(response)
-
-
