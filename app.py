@@ -5,12 +5,8 @@ import json
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import DocArrayInMemorySearch
 from operator import itemgetter
 
-# API configuration
-API_URL = "" 
-API_KEY = ""
 
 # Title and description
 st.title(" 💬 Chat with 🦙 LLAMA 3.1 8B on your personal PDF file ")
@@ -22,9 +18,8 @@ uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 # User input for question
 user_question = st.text_input("Ask a question about the PDF content:")
 
-# Use session state to store vectorstore, and other reusable objects
-if 'vectorstore' not in st.session_state:
-    st.session_state.vectorstore = None
+# Use session state to store PDF pages
+if 'pages' not in st.session_state:
     st.session_state.pages = None
 
 def call_llama_api(prompt):
@@ -34,7 +29,7 @@ def call_llama_api(prompt):
     }
     data = {
         "prompt": prompt,
-        "max_tokens": 120  # Adjust as needed
+        "max_tokens": 150  # Adjust as needed
     }
     response = requests.post(API_URL, headers=headers, data=json.dumps(data))
     
@@ -51,17 +46,11 @@ if uploaded_file:
     loader = PyPDFLoader(temp_file_path)
     pages = loader.load_and_split()
 
-    if st.session_state.pages != pages:
-        # Create a vector store using the content from PDF
-        vectorstore = DocArrayInMemorySearch.from_documents(pages, embedding=None)  # No embedding required for API use
-        retriever = vectorstore.as_retriever()
-
-        # Save to session state
-        st.session_state.vectorstore = vectorstore
-        st.session_state.pages = pages
+    # Save to session state
+    st.session_state.pages = pages
 
 if user_question:
-    if st.session_state.vectorstore is not None:
+    if st.session_state.pages is not None:
         template = """
         Answer the question based on the context below. If you can't 
         answer the question, reply "I don't know".
