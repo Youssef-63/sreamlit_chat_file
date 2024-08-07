@@ -73,9 +73,7 @@ if user_question:
 
         st.sidebar.write("### PDF Content")
         for page in st.session_state.pages:
-            st.sidebar.write(page.page_content)
-        Display the PDF using an HTML iframe
-       
+            st.sidebar.write(page.page_content)       
         
         # Display the response
         st.write("### Response from LLM")
