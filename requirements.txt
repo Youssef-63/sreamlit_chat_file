@@ -3,3 +3,4 @@ langchain-ollama
 langchain-community
 pypdf
 langchain
+docarray
