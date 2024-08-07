@@ -15,7 +15,7 @@ openai.api_key = API_KEY
 openai.api_base = API_URL
 
 # Title and description
-st.title(" 💬 Chat with 🦙 LLAMA 3.1 8B on your personal PDF file ")
+st.title(" 💬 Chat with 🦙 LLAMA on your PDF file ")
 st.write("Upload a PDF and ask questions about its content.")
 
 # PDF file upload
