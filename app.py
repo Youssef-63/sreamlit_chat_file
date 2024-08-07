@@ -80,8 +80,8 @@ if user_question:
         <iframe src="https://docs.google.com/gview?url={temp_file_path}&embedded=true" 
                 style="width: 70%; height: 90vh;" frameborder="0"></iframe>
         """
-    
-        st.markdown(pdf_display_html, unsafe_allow_html=True)
+        with st.sidebar:
+            st.markdown(pdf_display_html, unsafe_allow_html=True)
         
         # Display the response
         st.write("### Response from LLM")
