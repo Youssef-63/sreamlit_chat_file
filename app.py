@@ -1,14 +1,18 @@
 import streamlit as st
 import tempfile
-import requests
-import json
+import openai
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
 from operator import itemgetter
 
+# Access API configuration from Streamlit secrets
+API_URL = "https://api.aimlapi.com"
 API_KEY = st.secrets["API_KEY"]
-API_URL = st.secrets["API_URL"]
+
+# Initialize OpenAI client
+openai.api_key = API_KEY
+openai.api_base = API_URL
 
 # Title and description
 st.title(" 💬 Chat with 🦙 LLAMA 3.1 8B on your personal PDF file ")
@@ -25,21 +29,18 @@ if 'pages' not in st.session_state:
     st.session_state.pages = None
 
 def call_llama_api(prompt):
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "model" : "LLaMA-3.1 Chat (8B)",
-        "prompt": prompt,
-        "max_tokens": 150  # Adjust as needed
-    }
-    response = requests.post(API_URL, headers=headers, data=json.dumps(data))
-    
-    if response.status_code == 200:
-        return response.json().get('text', 'No response text')
-    else:
-        return f"Error: {response.status_code} - {response.text}"
+    try:
+        response = openai.ChatCompletion.create(
+            model="meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
+            messages=[
+                {"role": "system", "content": "You are an AI assistant who knows everything."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        message = response.choices[0].message["content"]
+        return message
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 if uploaded_file:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
