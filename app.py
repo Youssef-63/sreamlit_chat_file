@@ -6,7 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import PyPDFLoader
 
 # Set Groq API Key from Streamlit secrets
-API_KEY = st.secrets["GROQ_API_KEY"]
+API_KEY = st.secrets["pdf"]
 
 # Initialize Groq client
 client = Groq(api_key=API_KEY)
