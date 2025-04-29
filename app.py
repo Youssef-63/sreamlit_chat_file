@@ -1,18 +1,15 @@
 import streamlit as st
 import tempfile
-import openai
+import os
+from groq import Groq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
-from operator import itemgetter
 
-# Access API configuration from Streamlit secrets
-API_URL = "https://api.groq.com/openai/v1/chat/completions"
-API_KEY = st.secrets["API_KEY"]
+# Set Groq API Key from Streamlit secrets
+API_KEY = st.secrets["GROQ_API_KEY"]
 
-# Initialize OpenAI client
-openai.api_key = API_KEY
-openai.api_base = API_URL
+# Initialize Groq client
+client = Groq(api_key=API_KEY)
 
 # Title and description
 st.title(" 💬 Chat with 🦙 LLAMA on your PDF file ")
@@ -30,15 +27,14 @@ if 'pages' not in st.session_state:
 
 def call_llama_api(prompt):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": "You are an AI assistant who knows everything."},
                 {"role": "user", "content": prompt}
             ]
         )
-        message = response.choices[0].message["content"]
-        return message
+        return response.choices[0].message.content
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -74,7 +70,7 @@ if user_question:
         st.sidebar.write("### PDF Content")
         for page in st.session_state.pages:
             st.sidebar.write(page.page_content)       
-        
+            
         # Display the response
         st.write("### Response from LLM")
         st.write(response)
