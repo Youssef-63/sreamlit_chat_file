@@ -7,7 +7,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from operator import itemgetter
 
 # Access API configuration from Streamlit secrets
-API_URL = "https://api.aimlapi.com"
+API_URL = "https://api.groq.com/openai/v1/chat/completions"
 API_KEY = st.secrets["API_KEY"]
 
 # Initialize OpenAI client
@@ -31,7 +31,7 @@ if 'pages' not in st.session_state:
 def call_llama_api(prompt):
     try:
         response = openai.ChatCompletion.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": "You are an AI assistant who knows everything."},
                 {"role": "user", "content": prompt}
