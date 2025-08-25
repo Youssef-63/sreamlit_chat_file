@@ -12,7 +12,7 @@ API_KEY = st.secrets["pdf"]
 client = Groq(api_key=API_KEY)
 
 # Title and description
-st.title(" 💬 Chat with 🦙 LLAMA on your PDF file ")
+st.title(" 💬 Intelligent PDF Interaction")
 st.write("Upload a PDF and ask questions about its content.")
 
 # PDF file upload
@@ -74,3 +74,4 @@ if user_question:
         # Display the response
         st.write("### Response from LLM")
         st.write(response)
+
